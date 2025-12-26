@@ -1,5 +1,90 @@
 ---
-description: Sets rules for the part of the project which controls the Ringcon.
+description: C# coding rules for Nintendo Ringcon controller integration in Unity tower defense game. Applies C#/.NET conventions and Unity input system best practices.
 globs: Assets/Scripts/RingconController/**/*.cs
 ---
-- This part of the project involves making a tower defense style game that uses a Nintendo Ringcon as the controller.
+
+# C# Ringcon Controller Integration Rules
+
+## Ringcon Integration Overview
+
+- **Controller**: Nintendo Ringcon integration for tower defense game
+- **Functionality**: Players use exercise tracked by Ringcon to charge turrets
+- **Technology**: C# in Unity 2021.3.18f1+
+- **Scope**: All scripts related to Ringcon controller input, exercise tracking, and turret charging
+
+## C# Coding Standards
+
+Follow the general C# Unity coding standards with Ringcon-specific considerations:
+
+### Controller Class Structure
+
+- **Input Handler**: Separate input handling from game logic
+- **Exercise Tracker**: Implement exercise detection and tracking
+- **Charge System**: Connect exercise input to turret charging mechanics
+- **Device Management**: Handle Ringcon connection/disconnection gracefully
+
+### Naming Conventions
+
+- **Controller Classes**: PascalCase (`RingconController`, `ExerciseTracker`, `RingconInputHandler`)
+- **Methods**: PascalCase with clear intent (`ReadRingconInput`, `TrackExercise`, `ConvertExerciseToCharge`)
+- **Properties**: PascalCase (`IsConnected`, `CurrentExerciseLevel`, `ChargeRate`)
+- **Events**: PascalCase with EventHandler suffix (`OnExerciseDetectedEventHandler`, `OnConnectionChangedEventHandler`)
+- **Private Fields**: `_camelCase` prefix (`_ringconDevice`, `_currentCharge`, `_exerciseThreshold`)
+
+### Input Handling
+
+- **Unity Input System**: Use Unity's Input System or Input Manager appropriately
+- **Device Detection**: Check for Ringcon device availability and connection status
+- **Input Reading**: Read input values efficiently (avoid unnecessary polling)
+- **Calibration**: Implement calibration system if needed for exercise thresholds
+
+### Exercise Tracking
+
+- **Exercise Detection**: Detect and categorize different types of exercises
+- **Intensity Measurement**: Measure exercise intensity and convert to charge values
+- **State Management**: Track exercise state (idle, exercising, rest period)
+- **Data Processing**: Smooth/filter input data to handle noise and jitter
+
+### Charge System Integration
+
+- **Charge Calculation**: Convert exercise input to turret charge values
+- **Charge Distribution**: Distribute charge to selected or active turrets
+- **Charge Limits**: Implement charge limits and overflow handling
+- **Visual Feedback**: Provide visual/audio feedback for charge progress
+
+### Error Handling
+
+- **Device Errors**: Handle Ringcon disconnection and reconnection
+- **Input Validation**: Validate input values and handle out-of-range values
+- **Null Checks**: Validate device references and component dependencies
+- **Exception Handling**: Use try-catch for device communication errors
+
+### Performance Considerations
+
+- **Input Polling**: Optimize input reading frequency
+- **Event-Driven**: Use events instead of polling when possible
+- **Data Smoothing**: Efficient filtering/smoothing algorithms
+- **Memory Management**: Avoid allocations in Update loops
+
+### Unity Integration
+
+- **Input System**: Integrate with Unity's Input System or Input Manager
+- **Component Design**: Use MonoBehaviour components appropriately
+- **Inspector Configuration**: Use `[SerializeField]` for tunable parameters (thresholds, calibration values)
+- **Events**: Use Unity Events or C# events for input events (onExerciseDetected, onChargeUpdated)
+
+### Testing Considerations
+
+- **Mock Input**: Create mock input system for testing without physical device
+- **Unit Testing**: Design for testability (separate input reading from game logic)
+- **Integration Testing**: Test exercise-to-charge conversion logic
+
+## Best Practices
+
+- Separate input handling from game logic
+- Use interfaces for flexible input system (`IInputProvider`, `IExerciseTracker`)
+- Implement proper state management for controller states
+- Handle device connection/disconnection gracefully
+- Provide calibration and configuration options
+- Document exercise-to-charge conversion algorithms
+- Implement proper error handling and recovery

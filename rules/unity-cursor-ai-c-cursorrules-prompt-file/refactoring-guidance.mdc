@@ -1,7 +1,73 @@
 ---
-description: Provides guidance specifically related to refactoring the existing tower defense project.
+description: C# refactoring guidance for Unity tower defense project. Focuses on improving code quality, maintainability, and extensibility while following C#/.NET and Unity best practices.
 globs: Assets/**/*.cs
 ---
-- Currently, I'm refactoring the entire project, because I wrote much of it in a sprint, and I'm not sure how well it will work in the long run.
-- I also want to be able to extend it more easily.
-- You can ask questions if it would be helpful to know more about what I intend.
+
+# C# Unity Refactoring Guidance
+
+## Refactoring Context
+
+- **Current Status**: Project was written quickly in a sprint and needs refactoring for long-term maintainability
+- **Goals**: Improve code structure, extensibility, and maintainability
+- **Approach**: Refactor incrementally while maintaining functionality
+
+## Refactoring Principles
+
+### Code Quality Improvements
+
+- **Extract Methods**: Break down large methods into smaller, focused methods
+- **Extract Classes**: Separate concerns into distinct classes
+- **Eliminate Code Duplication**: Identify and extract common patterns
+- **Improve Naming**: Use descriptive, intent-revealing names following C# conventions
+- **Add Documentation**: Document complex logic and public APIs
+
+### Architecture Improvements
+
+- **Apply SOLID Principles**: Especially Single Responsibility and Dependency Inversion
+- **Use Interfaces**: Create interfaces for flexibility and testability
+- **Component Separation**: Separate game logic from Unity-specific code where possible
+- **Dependency Injection**: Reduce coupling between components
+- **Event-Driven Architecture**: Use events for decoupled communication
+
+### Unity-Specific Refactoring
+
+- **Component Caching**: Refactor repeated `GetComponent<T>()` calls to cached references
+- **Object Pooling**: Replace frequent Instantiate/Destroy with object pooling
+- **ScriptableObjects**: Extract game data and configuration to ScriptableObjects
+- **State Management**: Implement proper state machines for game objects
+- **Performance Optimization**: Optimize Update loops, reduce allocations
+
+### C# Modern Features
+
+- **Nullable Reference Types**: Use nullable annotations for null-safety
+- **Records**: Consider records for immutable data structures
+- **Pattern Matching**: Use pattern matching for type checking
+- **Async/Await**: Replace coroutines with async/await where appropriate (Unity 2021.3+)
+- **Expression Bodies**: Use for simple properties and methods
+
+## Refactoring Checklist
+
+- [ ] Extract magic numbers to named constants
+- [ ] Cache component references in Awake/Start
+- [ ] Replace public fields with properties or [SerializeField]
+- [ ] Add XML documentation to public APIs
+- [ ] Implement interfaces for flexible design
+- [ ] Extract duplicated code into reusable methods
+- [ ] Optimize Update loops (minimize allocations)
+- [ ] Implement object pooling for frequently instantiated objects
+- [ ] Separate game logic from MonoBehaviour code where possible
+- [ ] Add proper error handling and null checks
+- [ ] Use events for decoupled communication
+- [ ] Extract game data to ScriptableObjects
+
+## Questions to Consider
+
+When refactoring, consider:
+- Can this code be made more modular?
+- Is this logic reusable elsewhere?
+- Can we reduce coupling between components?
+- Are there performance improvements we can make?
+- Is the code following C# and Unity best practices?
+- Will this change improve maintainability?
+
+Feel free to ask questions if you need more information about refactoring intentions or specific areas of concern.

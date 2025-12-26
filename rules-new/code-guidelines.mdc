@@ -1,162 +1,243 @@
 ---
-description: General code guidelines that apply across multiple programming languages and frameworks. These rules emphasize code quality, maintainability, and consistency.
-globs:
+description: General C#/.NET code guidelines emphasizing code quality, maintainability, and consistency. Applies Microsoft C# conventions and .NET best practices across all development scenarios.
+globs: "**/*.cs"
 ---
 
-# Code Guidelines and Best Practices
+# C# and .NET Code Guidelines and Best Practices
 
-## Verify Information
+## Technology Context
+
+These guidelines apply to C# and .NET development projects, following Microsoft's official conventions and modern .NET ecosystem best practices.
+
+**Technology Stack:**
+- **Language**: C# 12+ (prefer latest stable version)
+- **Framework**: .NET 8+ (or latest LTS)
+- **IDEs**: Visual Studio 2022, Visual Studio Code, JetBrains Rider
+- **Code Analysis**: Roslyn Analyzers, StyleCop, SonarAnalyzer
+- **Testing**: xUnit, NUnit, MSTest (with FluentAssertions, Moq/NSubstitute)
+- **Documentation**: XML Documentation Comments (///)
+
+## General Development Principles
+
+### Verify Information
 
 Always verify information before presenting it. Do not make assumptions or speculate without clear evidence.
 
-## File-by-File Changes
+### File-by-File Changes
 
 Make changes file by file and give a chance to spot mistakes before proceeding to the next file.
 
-## No Apologies
+### No Apologies
 
 Never use apologies in code reviews or documentation.
 
-## Understanding Feedback
+### Understanding Feedback
 
 Avoid giving feedback about understanding in comments or documentation.
 
-## Whitespace Suggestions
+### Whitespace Suggestions
 
 Don't suggest whitespace changes unless they're critical to code style.
 
-## Summaries
+### Summaries
 
 Don't summarize changes made; instead focus on substantive improvements.
 
-## Avoid Inventions
+### Avoid Inventions
 
 Don't invent changes other than what's explicitly requested.
 
-## Unnecessary Confirmations
+### Unnecessary Confirmations
 
 Don't ask for confirmation of information already provided in the context.
 
-## Preserve Existing Code
+### Preserve Existing Code
 
 Don't remove unrelated code or functionalities. Pay attention to preserving existing structures.
 
-## Single Chunk Edits
+### Single Chunk Edits
 
 Provide all edits in a single chunk instead of multiple-step instructions or explanations for the same file.
 
-## Implementation Checks
+### Implementation Checks
 
 Don't ask the user to verify implementations that are visible in the provided context.
 
-## Unnecessary Updates
+### Unnecessary Updates
 
 Don't suggest updates or changes to files when there are no actual modifications needed.
 
-## Real File Links
+### Real File Links
 
 Always provide links to the real files, not context-generated versions.
 
-## Current Implementation
+### Current Implementation
 
 Don't show or discuss the current implementation unless specifically requested.
 
-## Context Generated File Content
+### Context Generated File Content
 
 Remember to check the context-generated file for current file contents and implementations.
 
-## Use Explicit Variable Names
+## C#/.NET Specific Guidelines
+
+### Use Explicit Variable Names
 
 Prefer descriptive, explicit variable names over short, ambiguous ones to enhance code readability.
 
 - In C#, follow PascalCase for public members and camelCase for local variables and parameters
+- Private fields use `_camelCase` prefix
 - Use clear, intent-revealing names that describe purpose
-- Avoid single-letter variables except in loops
+- Avoid single-letter variables except in loops (i, j, k)
+- Boolean variables should use prefixes like `is`, `has`, `can` (e.g., `isActive`, `hasPermission`)
 
-## Follow Consistent Coding Style
+### Follow Consistent Coding Style
 
 Adhere to the existing coding style in the project for consistency.
 
 - For .NET projects, align with Microsoft's C# coding conventions
 - Match the established patterns in the codebase
-- Use the same indentation, spacing, and formatting conventions
+- Use the same indentation (4 spaces), spacing, and formatting conventions
+- Follow Egyptian braces style (opening brace on same line) for modern .NET
+- Use 120 character line length limit (or project-specific)
 
-## Prioritize Performance
+### Prioritize Performance
 
 When suggesting changes, consider and prioritize code performance where applicable.
 
-- In async scenarios, ensure proper async/await usage and avoid blocking calls
+- In async scenarios, ensure proper async/await usage and avoid blocking calls (`.Result`, `.Wait()`)
+- Use `IAsyncEnumerable<T>` for streaming large collections
 - Consider algorithmic complexity and data structure choices
-- Profile code before optimizing
-- Don't over-optimize prematurely
+- Profile code before optimizing (avoid premature optimization)
+- Cache frequently accessed data
+- Use `StringBuilder` for string concatenation in loops
+- Prefer `Span<T>` and `Memory<T>` for performance-critical code
 
-## Security-First Approach
+### Security-First Approach
 
 Always consider security implications when modifying or suggesting code changes.
 
 - In .NET, utilize nullable reference types and null-safety features
-- Validate user input and sanitize data
-- Avoid hardcoding secrets or sensitive information
+- Validate user input and sanitize data at API boundaries
+- Avoid hardcoding secrets or sensitive information (use configuration, secrets management)
 - Follow OWASP guidelines for web applications
+- Use parameterized queries (EF Core does this automatically, but be aware)
+- Implement proper authentication and authorization
+- Use HTTPS and enforce SSL in production
+- Validate file uploads and limit file sizes
 
-## Test Coverage
+### Test Coverage
 
 Suggest or include appropriate unit tests for new or modified code.
 
 - Use xUnit, NUnit, or MSTest conventions depending on the project
-- Follow the Arrange-Act-Assert pattern
+- Follow the Arrange-Act-Assert (AAA) pattern
 - Test both success and failure scenarios
 - Maintain high code coverage for critical paths
+- Use FluentAssertions for readable test assertions
+- Mock external dependencies using Moq, NSubstitute, or similar
+- Test naming: `[MethodName]_[Scenario]_[Expected]`
 
-## Error Handling
+### Error Handling
 
 Implement robust error handling and logging where necessary.
 
-- In C#, create custom exception types and use try-catch at appropriate boundaries
-- Log exceptions with full context information
+- In C#, create custom exception types for domain-specific errors (`InvalidOrderException`, `UserNotFoundException`)
+- Use try-catch at appropriate boundaries (controllers, middleware, application services)
+- Don't catch generic `Exception`; catch specific exceptions
+- Log exceptions with full context using structured logging (ILogger<T>)
+- Use `ArgumentNullException.ThrowIfNull()` for null validation (C# 10+)
 - Provide meaningful error messages to users
 - Don't swallow exceptions silently
+- Re-throw exceptions using `throw;` to preserve stack trace
 
-## Modular Design
+### Modular Design
 
 Encourage modular design principles to improve code maintainability and reusability.
 
 - Apply SOLID principles, especially dependency injection patterns in .NET
-- Keep functions small and focused
-- Extract repeated code into reusable functions
+- Keep functions small and focused (single responsibility)
+- Extract repeated code into reusable functions or extension methods
 - Use composition over inheritance
+- Implement dependency injection using constructor injection
+- Prefer interfaces over concrete implementations
+- Use design patterns appropriately (Repository, Unit of Work, Factory, Strategy, etc.)
 
-## Version Compatibility
+### Version Compatibility
 
 Ensure suggested changes are compatible with the project's specified language or framework versions.
 
-- For .NET, specify e.g., .NET 6+, C# 10+ where applicable
+- For .NET, specify e.g., .NET 8+, C# 12+ where applicable
 - Check minimum version requirements for dependencies
 - Use appropriate APIs for the target framework
 - Document version-specific behavior
+- Be aware of breaking changes between .NET versions
 
-## Avoid Magic Numbers
+### Avoid Magic Numbers
 
 Replace hardcoded values with named constants to improve code clarity and maintainability.
 
-- Use descriptive constant names
-- Group related constants together
-- Keep constants in a central location
+- Use descriptive constant names (PascalCase in C#)
+- Group related constants together (in a static class or enum)
+- Keep constants in a central location or co-located with related code
+- Use `const` for compile-time constants, `readonly` for runtime constants
+- Consider using configuration for environment-specific values
 
-## Consider Edge Cases
+### Consider Edge Cases
 
 When implementing logic, always consider and handle potential edge cases.
 
-- Test with boundary values
+- Test with boundary values (null, empty, max, min)
 - Handle null or empty inputs gracefully
-- In LINQ queries and null scenarios, ensure proper null-safety
+- In LINQ queries and null scenarios, ensure proper null-safety using nullable reference types
 - Consider off-by-one errors in loops
+- Handle collection edge cases (empty collections, single item, large collections)
+- Consider concurrency issues in multi-threaded scenarios
 
-## Use Assertions
+### Use Assertions
 
 Include assertions wherever possible to validate assumptions and catch potential errors early.
 
-- In .NET, leverage Debug.Assert and unit tests
-- Use contract annotations where applicable
+- In .NET, leverage `Debug.Assert()` and `Trace.Assert()` for debugging
+- Use guard clauses with `ArgumentNullException.ThrowIfNull()`
+- Use unit tests as executable assertions
 - Fail fast on invalid states
 - Document assumptions with assertions
+- Remove or conditionally compile assertions in production if performance is critical
+
+### Null Safety
+
+- Enable nullable reference types project-wide (`<Nullable>enable</Nullable>`)
+- Use nullable annotations (`string?` for nullable, `string` for non-nullable)
+- Use null-coalescing operators (`??`, `??=`)
+- Use null-conditional operators (`?.`, `?[]`)
+- Validate null references at API boundaries
+- Use the null-forgiving operator (`!`) sparingly and document why
+
+### Async/Await Best Practices
+
+- Always use async/await for I/O-bound operations
+- Use `async Task` for void-returning operations, `async Task<T>` for value-returning operations
+- **Never** use `async void` except for event handlers
+- Use `ConfigureAwait(false)` in library code (optional in application code)
+- Avoid blocking async code (don't use `.Result` or `.Wait()`)
+- Use `CancellationToken` for long-running operations
+- Prefer `Task.FromResult()` over `Task.CompletedTask` for synchronous returns
+
+### LINQ Best Practices
+
+- Prefer method syntax for complex queries
+- Use query syntax for joins and grouping when more readable
+- Avoid LINQ in performance-critical paths (consider raw loops)
+- Use `Any()` instead of `Count() > 0` for existence checks
+- Use `FirstOrDefault()` or `SingleOrDefault()` appropriately
+- Consider deferred execution implications
+- Materialize queries when necessary (`.ToList()`, `.ToArray()`)
+
+## Resources
+
+- [C# Coding Conventions](https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+- [.NET Design Guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/)
+- [ASP.NET Core Best Practices](https://learn.microsoft.com/aspnet/core/fundamentals/best-practices)
+- [Entity Framework Core Performance](https://learn.microsoft.com/ef/core/performance/)
+- [OWASP .NET Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DotNet_Security_Cheat_Sheet.html)

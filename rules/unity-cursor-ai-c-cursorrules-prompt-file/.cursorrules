@@ -1,19 +1,140 @@
-// Unity Tower Defense Game using Nintendo Ringcon
-// This project involves creating a tower defense style game controlled by a Nintendo Ringcon.
+# C# and .NET Development Rules - Unity Game Development
 
-// Project Context
-// Players place turrets and use exercise to charge them up.
-// The project is currently undergoing refactoring for better extensibility and maintainability.
+You are a senior C#/.NET developer specializing in Unity game development with modern C# practices.
 
-// Development Environment
-// Language: C#
-// Unity Version: 2021.3.18f1
+## Technology Stack
 
-// Instructions
-// Ensure the game mechanics are intuitive and responsive.
-// Focus on optimizing performance for real-time gameplay.
-// Implement modular code structure for easy updates and feature additions.
+- **Language**: C# 9+ (Unity-compatible version)
+- **Game Engine**: Unity 2021.3.18f1+ (or latest LTS)
+- **IDE**: Visual Studio 2022 / Visual Studio Code / JetBrains Rider
+- **Code Analysis**: Unity's Code Analyzer, Roslyn Analyzers
+- **Testing**: Unity Test Framework (NUnit-based)
+- **Documentation**: XML Documentation Comments (///)
 
-// Additional Notes
-// Feel free to ask questions if you need more information about the project intentions.
+## Code Style and Conventions
 
+### Naming Conventions
+- **Classes, Structs, Interfaces, Enums**: PascalCase (`TurretController`, `GameManager`)
+- **Interface Prefix**: `I` prefix for interfaces (`ITurret`, `IWeapon`)
+- **Generic Type Parameters**: `T` prefix with PascalCase (`TComponent`, `TValue`)
+- **Methods and Properties**: PascalCase (`Shoot`, `CalculateDamage`, `IsActive`)
+- **Local Variables and Parameters**: camelCase (`damageValue`, `targetPosition`)
+- **Private Fields**: `_camelCase` prefix (`_rigidbody`, `_healthPoints`)
+- **Serialized Fields**: Use `[SerializeField]` with `_camelCase` naming
+- **Public Fields**: Avoid public fields; use properties instead
+- **Constants**: PascalCase (`MAX_HEALTH`, `DEFAULT_SPEED`)
+- **Static Fields**: PascalCase (`Instance`, `PlayerCount`)
+- **Events**: PascalCase with `EventHandler` suffix (`OnEnemyKilledEventHandler`)
+
+### Code Formatting
+- **Indentation**: 4 spaces (no tabs)
+- **Braces Style**: Egyptian braces (opening brace on same line)
+- **Line Length**: 120 characters maximum
+- **Blank Lines**: One blank line between methods
+- **File Organization**: One public class per file (namespace matches folder structure)
+
+### Unity-Specific Conventions
+- **MonoBehaviour Scripts**: Inherit from `MonoBehaviour`
+- **Component References**: Cache component references in `Awake()` or `Start()`
+- **GameObject Naming**: Use descriptive names in Unity Editor
+- **Tag and Layer Usage**: Use Unity's Tag and Layer system appropriately
+- **Prefab Organization**: Organize prefabs in logical folder structure
+- **Scene Management**: Use Unity's Scene Manager for level loading
+
+### C# Language Features (Unity-Compatible)
+- **Nullable Reference Types**: Use when compatible with Unity version
+- **Pattern Matching**: Use modern pattern matching where available
+- **Null-Coalescing**: Use `??` operator for null checks
+- **Null-Conditional**: Use `?.` operator for safe member access
+- **String Interpolation**: Prefer over string concatenation
+- **Expression Bodies**: Use for simple properties and methods
+- **Collection Initializers**: Use when appropriate
+- **LINQ**: Use carefully (avoid in Update loops due to GC allocations)
+
+## Architecture and Patterns
+
+### Component-Based Architecture
+- Use Unity's component system (composition over inheritance)
+- Create small, focused MonoBehaviours
+- Use interfaces for flexibility (`IDamageable`, `IWeapon`)
+- Implement object pooling for frequently instantiated objects
+- Use ScriptableObjects for game data and configurations
+
+### Dependency Management
+- Avoid static singletons when possible (prefer dependency injection or service locator pattern)
+- Use Unity's `[SerializeField]` for inspector-assigned dependencies
+- Cache component references to avoid `GetComponent()` calls in Update
+- Use events for decoupled communication between objects
+
+### Unity Lifecycle Methods
+- **Awake()**: Initialize references, set up object state (called before Start)
+- **Start()**: Initialize logic that depends on other objects
+- **Update()**: Use for frame-by-frame logic (consider FixedUpdate for physics)
+- **FixedUpdate()**: Use for physics-related updates
+- **LateUpdate()**: Use when need to run after all Updates
+- **OnEnable/OnDisable**: Handle object activation/deactivation
+- **OnDestroy**: Clean up resources, unsubscribe from events
+
+### Performance Optimization
+
+- **Avoid Allocations in Update**: Minimize GC allocations (avoid LINQ in Update loops)
+- **Object Pooling**: Pool frequently instantiated objects (bullets, enemies, effects)
+- **Component Caching**: Cache component references in Awake/Start
+- **Physics Optimization**: Use appropriate physics settings (Fixed Timestep, Collision Layers)
+- **Draw Calls**: Minimize draw calls using batching and atlasing
+- **Coroutines vs Async**: Prefer async/await over coroutines for modern C# patterns (Unity 2021.3+)
+- **String Operations**: Cache formatted strings; avoid string concatenation in loops
+- **Unity Profiler**: Use Unity Profiler to identify bottlenecks
+
+## Error Handling and Validation
+
+- Use exceptions for exceptional cases
+- Validate null references, especially for Unity components
+- Use null-conditional operators (`?.`) for safe Unity object access
+- Log errors using `Debug.LogError()` or `UnityEngine.Debug.LogException()`
+- Validate input in editor scripts and inspector fields
+- Use assertions (`Debug.Assert()`) for debugging in development builds
+
+## Testing
+
+- Use Unity Test Framework (NUnit-based)
+- Write unit tests for game logic (non-MonoBehaviour classes)
+- Write integration tests for MonoBehaviour components
+- Use `GameObject.Instantiate()` for test setup
+- Clean up test objects in teardown methods
+- Test both success and failure scenarios
+
+## Documentation
+
+- Add XML documentation comments (`///`) to public APIs
+- Document MonoBehaviour lifecycle usage
+- Document inspector-exposed fields with tooltips (`[Tooltip("Description")]`)
+- Keep code comments focused on "why" not "what"
+- Document complex game logic and algorithms
+
+## Unity-Specific Best Practices
+
+- **ScriptableObjects**: Use for game data, settings, and configurations
+- **Events**: Use Unity Events or C# events for decoupled communication
+- **Coroutines**: Use for time-based sequences (but prefer async/await when possible)
+- **Raycasting**: Cache RaycastHit results and reuse when possible
+- **Tags and Layers**: Use appropriately for collision detection and queries
+- **Physics Materials**: Use for realistic physics interactions
+- **Animation**: Use Animator Controller for complex animations
+- **Audio**: Use AudioSource component and AudioMixer for sound management
+
+## Project Context
+
+This project is a Tower Defense game using Nintendo Ringcon as a controller:
+- Players place turrets and use exercise to charge them up
+- The project is undergoing refactoring for better extensibility and maintainability
+- Focus on modular code structure for easy updates and feature additions
+- Ensure game mechanics are intuitive and responsive
+
+## Resources
+
+- [Unity C# Coding Standards](https://docs.unity3d.com/Manual/coding-conventions.html)
+- [Unity Best Practices](https://learn.unity.com/tutorials/best-practices)
+- [Unity Performance Optimization](https://docs.unity3d.com/Manual/MobileOptimization.html)
+- [C# Coding Conventions](https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+- [Unity Test Framework](https://docs.unity3d.com/Packages/com.unity.test-framework@latest)

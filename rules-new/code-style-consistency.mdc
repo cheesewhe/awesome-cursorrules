@@ -1,6 +1,6 @@
 ---
-description: Specialized prompt for analyzing C#/.NET codebase patterns and ensuring new code follows established style and conventions aligned with Microsoft documentation and modern .NET ecosystem best practices.
-globs:
+description: C#/.NET code style consistency guidelines following Microsoft conventions and modern .NET ecosystem best practices. Ensures new code follows established patterns in existing codebases.
+globs: "**/*.cs"
 ---
 
 # C# and .NET Code Style Consistency
@@ -9,12 +9,12 @@ globs:
 
 You are an expert in C# and .NET development with deep knowledge of:
 
-- Visual Studio and Visual Studio Code IDEs
-- ASP.NET Core web frameworks
+- Visual Studio 2022, Visual Studio Code, and JetBrains Rider IDEs
+- ASP.NET Core web frameworks and minimal APIs
 - Entity Framework Core for data access
-- Modern C# language features (records, nullable reference types, async/await, LINQ)
+- Modern C# language features (C# 12: records, nullable reference types, async/await, LINQ, pattern matching, primary constructors)
 - Microsoft's official C# coding conventions and .NET design guidelines
-- Popular libraries and frameworks in the .NET ecosystem (xUnit, NUnit, Moq, Autofac, etc.)
+- Popular libraries and frameworks in the .NET ecosystem (xUnit, NUnit, MSTest, Moq, NSubstitute, FluentAssertions, Autofac, MediatR, etc.)
 
 Your expertise lies in quickly identifying stylistic patterns, architectural approaches, and coding preferences in existing C#/.NET codebases, then adapting new code to seamlessly integrate with those established patterns while maintaining best practices from Microsoft official documentation.
 
@@ -22,100 +22,146 @@ Your expertise lies in quickly identifying stylistic patterns, architectural app
 
 Before generating or suggesting any code, analyze the codebase for:
 
-- Naming conventions (PascalCase for types/methods, camelCase for locals/parameters, _camelCase for private fields)
-- Indentation patterns (spaces, typically 4 spaces per indent level in .NET)
-- XML documentation comments (/// syntax) on public APIs
-- Exception handling patterns (try-catch placement, custom exceptions)
-- Async/await patterns (async Task vs Task<T>, async void prohibition)
-- Dependency Injection container setup (Microsoft.Extensions.DependencyInjection or alternatives)
-- Entity Framework patterns (DbContext usage, entity configurations, LINQ query styles)
-- LINQ usage patterns (method syntax vs query syntax)
-- File organization and architecture patterns (one public type per file, folder structure)
-- Testing methodologies (xUnit, NUnit, MSTest, test naming conventions)
-- Null-coalescing and null-conditional operators (??., ??, #nullable directives)
-- Code block formatting (Allman vs. Egyptian braces - typically Egyptian in modern .NET)
-- Property initialization patterns (auto-properties, init-only, required modifiers)
-- Record vs. class usage patterns
-- Interface segregation and SOLID principles adherence
+- **Naming conventions**: PascalCase for types/methods, camelCase for locals/parameters, `_camelCase` for private fields
+- **Indentation patterns**: Spaces (typically 4 spaces per indent level in .NET), no tabs
+- **XML documentation comments**: `///` syntax on public APIs with `<summary>`, `<param>`, `<returns>`, `<exception>` tags
+- **Exception handling patterns**: try-catch placement, custom exceptions, exception logging
+- **Async/await patterns**: `async Task` vs `Task<T>`, `async void` prohibition (except event handlers), `ConfigureAwait(false)` usage
+- **Dependency Injection**: Container setup (`Microsoft.Extensions.DependencyInjection` or alternatives), lifetime management
+- **Entity Framework patterns**: DbContext usage, entity configurations, LINQ query styles (method vs query syntax)
+- **LINQ usage patterns**: Method syntax vs query syntax preference
+- **File organization**: One public type per file, namespace matches folder structure
+- **Testing methodologies**: xUnit, NUnit, MSTest, test naming conventions, mocking frameworks
+- **Null-safety**: Nullable reference types (`#nullable enable`), null-coalescing (`??`), null-conditional operators (`?.`, `?[]`)
+- **Code block formatting**: Allman vs. Egyptian braces (typically Egyptian in modern .NET)
+- **Property initialization**: Auto-properties, init-only properties, required modifiers (C# 11+)
+- **Record vs. class usage**: When records are preferred over classes
+- **Interface segregation**: SOLID principles adherence, especially Interface Segregation and Dependency Inversion
 
 ## ANALYSIS METHODOLOGY
 
 Implement this step-by-step approach to style analysis:
 
-1. **Examine Multiple Files**: Look at 3-5 representative files from the codebase, including Controllers, Services, Data models, and tests
+1. **Examine Multiple Files**: Look at 3-5 representative files from the codebase, including Controllers/APIs, Services, Data models/Entities, and tests
 2. **Identify Core Patterns**: Catalog consistent patterns for naming, async patterns, DI usage, and EF configurations across these files
-3. **Note Inconsistencies**: Recognize areas where style varies (e.g., async vs sync methods)
+3. **Note Inconsistencies**: Recognize areas where style varies (e.g., async vs sync methods, LINQ syntax preferences)
 4. **Prioritize Recent Code**: Give more weight to recently modified files as they may represent evolving standards
-5. **Check Microsoft Guidelines**: Reference https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
+5. **Check Microsoft Guidelines**: Reference https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions
 6. **Create Style Profile**: Summarize the dominant style characteristics specific to .NET
 7. **Adapt Recommendations**: Ensure all suggestions conform to the identified style profile and Microsoft best practices
 
 ## MANDATORY STANDARDS FOR C#/.NET
 
 ### XML Documentation
+
 - All public types, methods, properties, and events must have XML documentation
-- Use /// syntax with <summary>, <param>, <returns>, <exception> tags
+- Use `///` syntax with `<summary>`, `<param>`, `<returns>`, `<exception>` tags
+- Example:
+  ```csharp
+  /// <summary>
+  /// Retrieves a user by ID.
+  /// </summary>
+  /// <param name="userId">The unique identifier of the user.</param>
+  /// <returns>A Task representing the asynchronous operation, containing the user.</returns>
+  /// <exception cref="ArgumentNullException">Thrown when userId is null.</exception>
+  public async Task<User> GetUserAsync(Guid userId) { }
+  ```
 
 ### Naming Conventions
-- Types (classes, structs, interfaces, enums, records): PascalCase
-- Type parameters in generics: T-prefixed PascalCase (TEntity, TKey)
-- Methods and properties: PascalCase
-- Local variables, parameters: camelCase
-- Private fields: _camelCase prefix
-- Constants: PascalCase
-- Async methods: [Name]Async suffix
+
+- **Types** (classes, structs, interfaces, enums, records): PascalCase (`UserService`, `OrderEntity`)
+- **Type parameters** in generics: T-prefixed PascalCase (`TEntity`, `TKey`, `TResult`)
+- **Interfaces**: `I` prefix + PascalCase (`IUserService`, `IRepository<T>`)
+- **Methods and properties**: PascalCase (`GetUserAsync`, `IsActive`, `CalculateTotal`)
+- **Local variables and parameters**: camelCase (`userId`, `orderDto`, `result`)
+- **Private fields**: `_camelCase` prefix (`_logger`, `_userRepository`, `_configuration`)
+- **Constants**: PascalCase (`MaxRetryCount`, `DefaultTimeout`, `API_KEY`)
+- **Async methods**: `[Name]Async` suffix (`GetUserAsync`, `SaveOrderAsync`)
 
 ### Async/Await Patterns
-- Use async Task for void-returning operations
-- Use async Task<T> for operations returning values
-- NEVER use async void except for event handlers
-- Include ConfigureAwait(false) in library code
-- Properly await all async operations
+
+- Use `async Task` for void-returning operations
+- Use `async Task<T>` for operations returning values
+- **NEVER** use `async void` except for event handlers
+- Include `ConfigureAwait(false)` in library code (optional in application code)
+- Properly await all async operations (avoid `.Result` or `.Wait()`)
+- Use `CancellationToken` for long-running operations
+- Prefer `Task.FromResult()` over `Task.CompletedTask` for synchronous returns
 
 ### Dependency Injection
+
 - Constructor injection as primary pattern
-- Register dependencies in DI container (Program.cs or Startup.cs)
-- Use appropriate lifetimes (Transient/Scoped/Singleton)
+- Register dependencies in DI container (`Program.cs`, `Startup.cs`, or module configuration)
+- Use appropriate lifetimes: `Transient`, `Scoped`, `Singleton`
+- Prefer interfaces over concrete implementations
 - Avoid Service Locator pattern
+- Use `[ActivatorUtilitiesConstructor]` for multiple constructors when needed
 
 ### Null Safety
-- Enable #nullable enable in files or project-wide
-- Use nullable reference types (T? for nullable, T for non-nullable)
-- Use null-coalescing (??) and null-conditional (?.) operators
-- Validate null references at API boundaries
+
+- Enable `#nullable enable` in files or project-wide
+- Use nullable reference types (`T?` for nullable, `T` for non-nullable)
+- Use null-coalescing (`??`, `??=`) and null-conditional (`?.`, `?[]`) operators
+- Validate null references at API boundaries (use `ArgumentNullException.ThrowIfNull()`)
+- Use `!` null-forgiving operator sparingly and document why
 
 ### Entity Framework Core
-- Use DbContext for data access
-- Configure entities in OnModelCreating or separate configuration classes
+
+- Use `DbContext` for data access
+- Configure entities in `OnModelCreating` or separate configuration classes
 - Use LINQ for queries, prefer method syntax for complex queries
-- Implement IAsyncEnumerable for streaming results
-- Use projection (Select) to limit returned fields
+- Always use async methods (`ToListAsync`, `FirstOrDefaultAsync`, `SaveChangesAsync`)
+- Implement `IAsyncEnumerable<T>` for streaming results
+- Use projection (`Select`) to limit returned fields
+- Avoid N+1 query problems using `Include()` or `ThenInclude()`
+- Use compiled queries for frequently executed queries
 
 ### Error Handling
+
 - Create custom exceptions for domain-specific errors
-- Don't catch generic Exception; catch specific exceptions
-- Use try-catch at application boundaries
-- Log exceptions with context information
+- Don't catch generic `Exception`; catch specific exceptions
+- Use try-catch at application boundaries (controllers, middleware)
+- Log exceptions with full context using structured logging
+- Use `ArgumentNullException.ThrowIfNull()` for null validation (C# 10+)
+- Re-throw exceptions using `throw;` to preserve stack trace
 
 ### Testing
-- Follow [Test Framework] conventions
-- Test naming: [MethodName]_[Scenario]_[Expected]
-- Use Arrange-Act-Assert pattern
-- Mock external dependencies
+
+- Follow testing framework conventions (xUnit, NUnit, or MSTest)
+- Test naming: `[MethodName]_[Scenario]_[Expected]` or `MethodName_Scenario_Expected`
+- Use Arrange-Act-Assert (AAA) pattern
+- Mock external dependencies using Moq, NSubstitute, or similar
+- Use FluentAssertions for readable assertions
 - Test both success and failure paths
+- Use test fixtures and data builders for complex test setup
 
 ### Code Organization
-- One public type per file (few exceptions for related types)
+
+- One public type per file (few exceptions for related types like nested classes)
 - Namespace matches folder structure
 - Related classes grouped by feature/responsibility
 - Private helper methods at bottom of class
+- Using directives ordered: System, System.*, Microsoft.*, Third-party, Local
 
 ### Formatting
-- 4 spaces per indentation level
+
+- 4 spaces per indentation level (no tabs)
 - Egyptian braces (opening brace on same line)
 - One blank line between methods
+- Two blank lines between classes
 - No trailing whitespace
 - Line length: project-specific limit (typically 120 characters)
+- Use trailing commas in multi-line initializers (C# 7.3+)
+
+### Modern C# Features
+
+- **Records**: Use for DTOs and immutable data (`record UserDto`)
+- **Primary Constructors**: Use for simple classes (C# 12+)
+- **Pattern Matching**: Use modern patterns (switch expressions, pattern matching)
+- **File-Scoped Namespaces**: Use when compatible with project style (C# 10+)
+- **Global Usings**: Use `global using` for common namespaces (C# 10+)
+- **Init-only Properties**: Use for immutable object creation
+- **Required Properties**: Use for mandatory properties (C# 11+)
 
 ## VALIDATION AND ENFORCEMENT
 
@@ -123,18 +169,21 @@ Before presenting code suggestions:
 
 1. Verify naming conventions match the analyzed style profile
 2. Ensure all public APIs have XML documentation
-3. Validate async/await patterns (no async void)
+3. Validate async/await patterns (no `async void` except event handlers)
 4. Check null-safety with nullable reference types
 5. Confirm DI patterns match project setup
 6. Verify exception handling follows project patterns
 7. Ensure LINQ usage aligns with detected syntax preference
 8. Validate test structure matches framework conventions
+9. Check code formatting (indentation, braces, spacing)
+10. Verify modern C# features are used appropriately
 
 ## KEY MICROSOFT REFERENCES
 
-- C# Coding Conventions: https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
-- .NET Naming Guidelines: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines
-- Framework Design Guidelines: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/
-- Async/Await Best Practices: https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming
-- Entity Framework Core Docs: https://docs.microsoft.com/en-us/ef/core/
-- ASP.NET Core Best Practices: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/best-practices
+- [C# Coding Conventions](https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions)
+- [.NET Naming Guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/naming-guidelines)
+- [Framework Design Guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/)
+- [Async/Await Best Practices](https://learn.microsoft.com/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming)
+- [Entity Framework Core Docs](https://learn.microsoft.com/ef/core)
+- [ASP.NET Core Best Practices](https://learn.microsoft.com/aspnet/core/fundamentals/best-practices)
+- [.NET Performance](https://learn.microsoft.com/dotnet/fundamentals/performance/)

@@ -1,5 +1,72 @@
 ---
-description: Rules and constrains regarding the turrets which are part of the tower defense game
+description: C# coding rules for turret mechanics in Unity tower defense game. Applies C#/.NET conventions and Unity best practices specifically to turret-related scripts.
 globs: Assets/Scripts/Turrets/**/*.cs
 ---
-- Players place turrets and then use exercise to charge up those turrets.
+
+# C# Turret Mechanics Rules
+
+## Turret System Overview
+
+- **Game Mechanic**: Players place turrets and use exercise to charge them up
+- **Technology**: C# in Unity 2021.3.18f1+
+- **Scope**: All scripts related to turret functionality, placement, targeting, and firing
+
+## C# Coding Standards
+
+Follow the general C# Unity coding standards with turret-specific considerations:
+
+### Turret Class Structure
+
+- **Base Turret Class**: Create abstract or base class for common turret functionality
+- **Turret Types**: Use inheritance or composition for different turret types
+- **Interfaces**: Implement interfaces like `ITurret`, `ITargetable`, `IWeapon` for flexibility
+
+### Naming Conventions
+
+- **Turret Classes**: PascalCase with descriptive names (`BasicTurret`, `LaserTurret`, `MissileTurret`)
+- **Turret Components**: Descriptive names (`TurretRotation`, `TurretTargeting`, `TurretFiring`)
+- **Methods**: PascalCase with clear intent (`Shoot`, `RotateToTarget`, `ChargeTurret`, `IsInRange`)
+- **Properties**: PascalCase (`Range`, `Damage`, `FireRate`, `ChargeLevel`)
+- **Private Fields**: `_camelCase` prefix (`_target`, `_fireCooldown`, `_currentCharge`)
+
+### Turret Functionality
+
+- **Targeting System**: Implement efficient targeting logic (avoid expensive operations in Update)
+- **Rotation**: Smooth rotation towards targets using Unity's transform system
+- **Firing Logic**: Use object pooling for projectiles/bullets
+- **Charge System**: Implement charge mechanics for exercise-based charging
+- **Range Detection**: Optimize range checking (use triggers, spatial partitioning if needed)
+
+### Performance Considerations
+
+- **Update Optimization**: Minimize work in Update loops; use events or coroutines for periodic checks
+- **Object Pooling**: Pool turret projectiles and effects
+- **Target Finding**: Cache target searches; don't search every frame if possible
+- **Collision Detection**: Use appropriate collider types and layers
+
+### Unity Integration
+
+- **Component Design**: Use MonoBehaviour components for Unity-specific functionality
+- **Inspector Configuration**: Use `[SerializeField]` for tunable parameters (damage, range, fire rate)
+- **Events**: Use Unity Events or C# events for turret actions (onShoot, onTargetAcquired)
+- **ScriptableObjects**: Use for turret configurations and stats
+
+### Error Handling
+
+- Validate null references for targets and components
+- Handle edge cases (no targets, out of range, insufficient charge)
+- Use null-conditional operators (`?.`) for safe component access
+
+### Testing Considerations
+
+- Design turret logic to be testable (separate game logic from Unity-specific code)
+- Use interfaces for mocking in unit tests
+- Test turret behavior independently of Unity components when possible
+
+## Best Practices
+
+- Keep turret classes focused on single responsibility
+- Separate targeting, firing, and rotation logic into different components
+- Use composition over inheritance for turret variations
+- Implement proper state management for turret states (idle, targeting, firing, charging)
+- Document complex targeting algorithms and charge calculations

@@ -1,8 +1,80 @@
 ---
-description: Applies general rules to all C# scripts within the Unity project for the tower defense game.
+description: General C# coding rules for Unity tower defense game development. Applies C#/.NET conventions and Unity best practices across all game scripts.
 globs: Assets/**/*.cs
 ---
-- The context for this code, in addition to the file itself and the wider project, is that I am making a tower defense style game that uses a Nintendo Ringcon as the controller.
-- Players place turrets and then use exercise to charge up those turrets.
-- I'm working in C# and Unity 2021.3.18f1.
-- I'm refactoring the entire project, because I wrote much of it in a sprint, and I'm not sure how well it will work in the long run. I also want to be able to extend it more easily.
+
+# C# Unity Tower Defense Game - General Rules
+
+## Project Context
+
+- **Project Type**: Tower Defense game using Nintendo Ringcon as controller
+- **Language**: C# (Unity-compatible version, C# 9+)
+- **Unity Version**: 2021.3.18f1 (or latest LTS)
+- **Game Mechanics**: Players place turrets and use exercise to charge them up
+- **Current Status**: Project is undergoing refactoring for better extensibility and maintainability
+
+## C# Coding Standards
+
+### Naming Conventions
+
+- **Classes, Structs, Interfaces, Enums**: PascalCase (`TurretController`, `GameManager`, `EnemySpawner`)
+- **Interface Prefix**: `I` prefix for interfaces (`ITurret`, `IWeapon`, `IDamageable`)
+- **Methods and Properties**: PascalCase (`Shoot`, `CalculateDamage`, `IsActive`, `Health`)
+- **Local Variables and Parameters**: camelCase (`damageValue`, `targetPosition`, `spawnPoint`)
+- **Private Fields**: `_camelCase` prefix (`_rigidbody`, `_healthPoints`, `_turretRange`)
+- **Serialized Fields**: Use `[SerializeField]` with `_camelCase` naming
+- **Constants**: PascalCase (`MAX_HEALTH`, `DEFAULT_SPEED`, `SPAWN_INTERVAL`)
+- **Static Fields**: PascalCase (`Instance`, `PlayerCount`)
+
+### Code Style
+
+- **Indentation**: 4 spaces (no tabs)
+- **Braces Style**: Egyptian braces (opening brace on same line)
+- **Line Length**: 120 characters maximum
+- **Blank Lines**: One blank line between methods
+- **File Organization**: One public class per file, namespace matches folder structure
+
+### Unity-Specific Practices
+
+- **Component Caching**: Cache component references in `Awake()` or `Start()`
+- **MonoBehaviour Lifecycle**: Use appropriate lifecycle methods (`Awake`, `Start`, `Update`, `FixedUpdate`, `LateUpdate`)
+- **Serialized Fields**: Use `[SerializeField]` instead of public fields for inspector visibility
+- **Events**: Use C# events or Unity Events for decoupled communication
+- **Object Pooling**: Implement object pooling for frequently instantiated objects (bullets, enemies, effects)
+
+### Performance Optimization
+
+- **Avoid Allocations**: Minimize GC allocations; avoid LINQ in `Update()` loops
+- **Component Caching**: Cache `GetComponent<T>()` results, don't call repeatedly
+- **Object Pooling**: Pool frequently created/destroyed objects
+- **String Operations**: Cache formatted strings; avoid string concatenation in loops
+- **Coroutines vs Async**: Prefer async/await over coroutines when possible (Unity 2021.3+)
+
+### Error Handling
+
+- Use null-conditional operators (`?.`) for safe Unity object access
+- Validate null references before using Unity components
+- Use `Debug.LogError()` or `Debug.LogException()` for error logging
+- Use `Debug.Assert()` for debugging invalid states
+
+### Documentation
+
+- Add XML documentation comments (`///`) to public APIs
+- Use `[Tooltip("Description")]` attribute for inspector fields
+- Document complex game logic and algorithms
+
+## Architecture Principles
+
+- **Component-Based**: Use Unity's component system (composition over inheritance)
+- **Modular Design**: Create small, focused MonoBehaviours with single responsibility
+- **Interface-Driven**: Use interfaces for flexibility (`IDamageable`, `IWeapon`, `ISpawnable`)
+- **Decoupled Communication**: Use events for communication between game objects
+- **ScriptableObjects**: Use for game data, settings, and configurations
+
+## Refactoring Goals
+
+- Improve code maintainability and extensibility
+- Establish clear architectural patterns
+- Ensure code follows C# and Unity best practices
+- Optimize performance for real-time gameplay
+- Create modular structure for easy updates and feature additions
